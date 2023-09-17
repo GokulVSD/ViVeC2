@@ -1,6 +1,6 @@
-
 import os
 import pandas as pd
+import numpy as np
 
 def exportPandasChunks(df, split=2, directoryPath="./Databases/pickle_chunks/", compressionType="zstd"):
     count = 1
@@ -27,8 +27,11 @@ def importPandasChunks(directoryPath="./Databases/pickle_chunks/", compressionTy
     return combined_df
 
 
+def testFunctions():
+    #Just for testing: https://stackoverflow.com/questions/32752292/how-to-create-a-dataframe-of-random-integers-with-pandas
+    df = pd.DataFrame(np.random.randint(0,100,size=(100, 4)), columns=list('ABCD'))
+    exportPandasChunks(df, split=4)
+    combined_df = importPandasChunks()
+    print(len(combined_df))
 
-df = pd.read_pickle("./imageDB.pickle", compression = "zstd")
-exportPandasChunks(df, split=4)
-combined_df = importPandasChunks()
-print(len(combined_df))
+# testFunctions()
