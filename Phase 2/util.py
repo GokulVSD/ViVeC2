@@ -2,7 +2,7 @@
 import os
 import pandas as pd
 
-def exportPandasChunks(split=2, directoryPath="./Databases/pickle_chunks/", compressionType="zstd"):
+def exportPandasChunks(df, split=2, directoryPath="./Databases/pickle_chunks/", compressionType="zstd"):
     count = 1
     for i in range(0, len(df)-1, (len(df)//split)):
         print("Exporting Chunk from " + str(i) + " to " +  str(i+(len(df)//split)+1))
@@ -29,6 +29,6 @@ def importPandasChunks(directoryPath="./Databases/pickle_chunks/", compressionTy
 
 
 df = pd.read_pickle("./imageDB.pickle", compression = "zstd")
-exportPandasChunks()
+exportPandasChunks(df, split=4)
 combined_df = importPandasChunks()
 print(len(combined_df))
