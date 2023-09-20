@@ -1,0 +1,6 @@
+
+*.mat
+*.jpg
+*.gz
+Phase_2_Caleb/Databases/CaltechDB/caltech101/101_ObjectCategories/BACKGROUND_Google/tmp
+Phase_2_Caleb/Databases/CaltechDB/caltech101/Annotations.tar
