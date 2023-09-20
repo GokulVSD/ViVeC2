@@ -36,7 +36,7 @@ fc1000_tensors = {}
 for i in range(len(dataset)):
     if i%2 != 0:
         continue
-    print(f"Processing image {i+1}/{len(dataset)} \t ({int(100*(i+1)/len(dataset))} %)", end='\r')
+    print(f"Processing image {i} \t ({int(100*(i+1)/len(dataset))} %)", end='\r')
 
     image, category = dataset[i][0], dataset.categories[dataset[i][1]]
 
@@ -101,6 +101,6 @@ torch.save(fc1000_tensors, os.path.join(db_dir, 'even_fc1000_tensors.pt'))
 print(
 """
 > Feature vectors for all images are stored in a tensor dictionary per descriptor type.
-> Stored in binary form, the key is the image ID, val is feature vector.
+> Stored in binary form, the key is the image ID, val is feature vector + category tuple.
 """
 )

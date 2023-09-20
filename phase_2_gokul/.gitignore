@@ -1,3 +1,5 @@
+.venv/
+
 **/caltech101
 **/.DS_Store
 

@@ -10,7 +10,7 @@ The system was developed using Python 3.11.5.
 1. It is recommended to setup a virtual environment within the project folder:
 
 python3 -m venv .venv
-source venv/bin/activate
+source .venv/bin/activate
 
 2. Install requirements within venv:
 
@@ -146,7 +146,7 @@ label l
 – creates a similarity graph, G(V, E), where V corresponds to the images in the database and E contains node pairs
 vi, vj such that, for each subject vi, vj is one of the n most similar images in the database in the given space
 
-– identifies the most significant m images (relative to the given label l) using personalized PageRank measure. 
+– identifies the most significant m images (relative to the given label l) using personalized PageRank measure.
 
 See Huang, S., Li, X., Candan, K. S., Sapino, M. L. (2016). Reducing seed noise in personalized PageRank.
 Social Network Analysis and Mining, 6(1), 1-25.
