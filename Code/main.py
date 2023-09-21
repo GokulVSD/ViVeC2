@@ -1,6 +1,7 @@
 from gen_utils import *
 from data_utils import prepare_dataset, prepare_model, display_images, show_images
-from task_manager import get_valid_tasks
+from directory_manager import create_directory
+from task_manager import get_phase_one_tasks
 from user_input_manager import retrieve_task_number, retrieve_input_image_id, retrieve_k_value, display_warning
 from feature_descriptors import retrieve_img_color_moments, retrieve_img_hog, retrieve_resnet_outputs
 from image_comparator import make_comparisons_for_image
@@ -103,7 +104,7 @@ def main():
     resnet_model = prepare_model(model_name=model_name)
 
     # Get Valid Tasks for Project Phase 1
-    valid_tasks = get_valid_tasks(dataset_name=dataset_name)
+    valid_tasks = get_phase_one_tasks(dataset_name=dataset_name)
 
     # Retrieve and Run Selected Task
     task_number = retrieve_task_number(valid_tasks)

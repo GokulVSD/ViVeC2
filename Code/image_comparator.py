@@ -1,6 +1,7 @@
 from distance_measures import get_distance_measures
 from gen_utils import *
 from data_utils import save_image, show_images
+from directory_manager import create_directory, delete_directory
 import os
 
 # Get Available Distance Measures

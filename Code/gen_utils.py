@@ -1,37 +1,8 @@
 import os
-import shutil
 import pickle
 import json
 import pandas as pd
 import numpy as np
-
-
-# Directory Management Utilities
-# Directory Creation
-def create_directory(directory_path):
-    if os.path.exists(directory_path):
-        print("Directory {} already Exists!".format(directory_path))
-        created_directory = False
-    else:
-        try:
-            os.mkdir(directory_path)
-            created_directory = True
-        except Exception as e:
-            print("Exception in Creating Directory:", e)
-            created_directory = False
-    return created_directory
-
-
-# Directory Management Utilities
-# Directory Deletion
-def delete_directory(directory_path):
-    try:
-        if os.path.exists(directory_path):
-            shutil.rmtree(directory_path)
-        else:
-            print("Directory Path {} does not exist!".format(directory_path))
-    except Exception as e:
-        print("Exception in Deleting Directory:", directory_path, e)
 
 
 # Read from a Pickle File
