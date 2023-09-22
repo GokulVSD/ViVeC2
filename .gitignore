@@ -4,3 +4,8 @@
 *.gz
 Phase_2_Caleb/Databases/CaltechDB/caltech101/101_ObjectCategories/BACKGROUND_Google/tmp
 Phase_2_Caleb/Databases/CaltechDB/caltech101/Annotations.tar
+ai
+__pycache__
+Datasets
+Outputs
+caltech101_dataset_feature_descriptors.pkl
