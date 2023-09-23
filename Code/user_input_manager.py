@@ -1,20 +1,50 @@
-# Retrieves a Valid Task Number for Phase 1 of the Project
-def retrieve_task_number(valid_tasks):
+def retrieve_selection(valid_options, messages):
+    try:
+        selection_message = messages["SELECTION"]
+        invalid_message = messages["INVALID"]
+        return_message = messages["RETURN"]
+    except Exception as e:
+        print("Drop-Down Menu Messages incorrectly configured!", e)
+        print("This functionality is yet to be completed!")
+        return "E"
+
     input_received = False
     while not input_received:
         print()
-        print("Please enter a valid Task Number from the following options:")
-        for task in valid_tasks:
-            print(task, "->", valid_tasks[task])
+        print(selection_message)  # Initial Selection Message
+        for option in valid_options:
+            print(option, "->", valid_options[option])
+        print(return_message)  # Message to End Execution / Go Back to Previous Menu
         try:
-            task_number = int(input("Enter your Choice: "))
-            if task_number in valid_tasks:
+            option_number = input("Enter your Choice: ")
+            if option_number in valid_options or option_number.upper() == "E":
                 input_received = True
             else:
-                print("Invalid Task Number Entered!")
-        except Exception as e:  # Throws an Exception if
+                print(invalid_message)
+        except Exception as e:  # Throws an Exception if the Input Format is Incorrect
             print("Invalid Input Entered! Please try again. Exception:", e)
-    return task_number
+
+    return option_number
+
+
+# Retrieves a Valid Task Number for a particular Phase of the Project
+def retrieve_phase_number(valid_phases):
+    messages = {
+        "SELECTION": "Please select the Phase of the Project:",
+        "INVALID": "Invalid Phase Entered!",
+        "RETURN": "Press E to Exit Execution"
+    }
+    return retrieve_selection(valid_phases, messages)
+
+
+# Retrieves a Valid Task Number for a particular Phase of the Project
+def retrieve_task_number(valid_tasks):
+    messages = {
+        "SELECTION": "Please enter a valid Task Number from the following options:",
+        "INVALID": "Invalid Task Number Entered!",
+        "RETURN": "Press E to Go Back to Phase Selection Menu"
+    }
+    return retrieve_selection(valid_tasks, messages)
 
 
 # Retrieve a Mandatory Image-ID based on the Dataset Size
