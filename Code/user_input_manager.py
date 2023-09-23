@@ -17,7 +17,8 @@ def retrieve_selection(valid_options, messages):
         print(return_message)  # Message to End Execution / Go Back to Previous Menu
         try:
             option_number = input("Enter your Choice: ")
-            if option_number in valid_options or option_number.upper() == "E":
+            complete_options = list(valid_options.keys()) + ["e"]
+            if option_number in complete_options:
                 input_received = True
             else:
                 print(invalid_message)

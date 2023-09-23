@@ -1,5 +1,6 @@
 from data_utils import prepare_dataset, prepare_model
 from directory_manager import create_directory
+from phase_manager import phase_manager
 import os
 
 
@@ -36,6 +37,9 @@ def main():
         "model": resnet_model,
         "model_name": model_name
     }
+
+    print()
+    phase_manager(directories=directories, data=data_info)
 
 
 if __name__ == '__main__':

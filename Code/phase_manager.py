@@ -21,5 +21,9 @@ def phase_manager(directories, data):
     exec_complete = False
     while not exec_complete:
         phase_number = retrieve_phase_number(PHASES)
-        exec_complete = PHASE_DRIVERS[phase_number](directories, data)
+        if phase_number.lower() == "e":
+            print("Exiting Phase Selection Menu...")
+            exec_complete = True
+        else:
+            exec_complete = PHASE_DRIVERS[PHASES[phase_number]](directories, data)
     print("Project Phase Manager Execution Complete!")
