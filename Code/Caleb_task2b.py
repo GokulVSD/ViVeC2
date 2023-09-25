@@ -6,6 +6,8 @@ import PIL
 from pathlib import Path
 from tqdm import tqdm
 import scipy
+import sklearn.cluster
+import math
 
 # Research References: 
 # https://saturncloud.io/blog/how-to-check-if-pytorch-is-using-the-gpu/
@@ -32,7 +34,7 @@ def transformImage(image, resNetWeight, torchDevice):
 def getCalTechCategory(caltechDB, label_id):
     return caltechDB.annotation_categories[label_id]
 
-def kSimilarImages_2b(imageID, df, caltechDB, k=10):
+def kSimilarImages_2b_1(imageID, df, caltechDB, k=10):
     # Extract the row that we want to compare with
     checkRow = df[df["ImageID"] == imageID]
     searchDF = df[df["ImageID"] != imageID]
@@ -49,6 +51,35 @@ def kSimilarImages_2b(imageID, df, caltechDB, k=10):
     results = distanceDF.sort_values(by="Distance")[0:k].reset_index()
     print("For ImageID: " + str(checkRow["ImageID"].values[0]).strip() + " & Label: " + str(checkRow["Label"].values[0]).strip())
     print(results[["Label", "Distance"]])
+
+def kSimilarImages_2b(imageID, df, caltechDB, k=10):
+    # Clustering and Parameters used from: https://www.analyticsvidhya.com/blog/2021/01/a-simple-guide-to-centroid-based-clustering-with-python-code/
+
+    # Get training set of dataset
+    traindf = df[df["ImageID"] % 2 == 0]
+
+    # Extract Row of imageID
+    checkRow = df[df["ImageID"] == imageID]
+
+    # Create the KMeans Clusters and get the centroids
+    kmeans = sklearn.cluster.KMeans(n_clusters=101, init="k-means++", random_state=0, n_init="auto").fit([list(row.astype(float)) for row in traindf["ResNet"]])
+    # print(kmeans.cluster_centers_)
+    # print(set(kmeans.labels_))
+
+    # Go through the centroids and find the closest ones
+    counter = 0
+    df_list = []
+    for centroid in kmeans.cluster_centers_:
+        # Distance is affecting results
+        distance = scipy.spatial.distance.cosine(checkRow["ResNet"].values[0], centroid)
+        df_list.append({"LabelID": counter, "Label": getCalTechCategory(caltechDB, counter), "Distance": distance})
+        counter = counter + 1
+
+    # Sort the results and get the top k results
+    distanceDF = pd.DataFrame(df_list)
+    results = distanceDF.sort_values(by="Distance")[0:k].reset_index()[["LabelID", "Label", "Distance"]]
+
+    print(results)
 
 def task2b():
     # Get Device
@@ -69,7 +100,7 @@ def task2b():
     df_list = []
 
     # For Loop in databases
-    for i in tqdm (range(0, len(caltechDB)), desc="Extracting Database Images' Features...", ncols=120):
+    for i in tqdm (range(0, len(caltechDB)), desc="Extracting Features", ncols=100):
     # for i in range(1580, 1582, 1):
         # Get Image
         image = caltechDB[i][0]
@@ -83,7 +114,7 @@ def task2b():
             result = resNetModel(imageTransform).squeeze(0).softmax(0).to(torchDevice)
 
             # Attach to List
-            row_df = {"ImageID": i, "Label": getCalTechCategory(caltechDB, caltechDB[i][1]), "ResNet": result.detach().cpu().numpy()}
+            row_df = {"ImageID": i, "Label": getCalTechCategory(caltechDB, caltechDB[i][1]), "LabelID": caltechDB[i][1], "ResNet": result.detach().cpu().numpy()}
             df_list.append(row_df)
         torch.cuda.empty_cache()
 
@@ -91,10 +122,14 @@ def task2b():
     df = pd.DataFrame(df_list)
     # print(df.head(5))
 
-    # Get K Similar Images based on an image
-    kSimilarImages_2b(0, df, caltechDB)
+    df.to_pickle("./testFile_2b")
 
+# task2b()
 
-task2b()
+# Get K Similar Images based on an image
+caltechDB = torchvision.datasets.Caltech101("./Databases/CaltechDB/", download=True, target_type="category")
+df = pd.read_pickle("./testFile_2b")
+kSimilarImages_2b(0, df, caltechDB)
+
 
     
