@@ -1,11 +1,9 @@
+.venv/
 
-*.mat
-*.jpg
-*.gz
-Phase_2_Caleb/Databases/CaltechDB/caltech101/101_ObjectCategories/BACKGROUND_Google/tmp
-Phase_2_Caleb/Databases/CaltechDB/caltech101/Annotations.tar
-ai
-__pycache__
-Datasets
-Outputs
-caltech101_dataset_feature_descriptors.pkl
+**/caltech101
+**/.DS_Store
+
+.ipynb_checkpoints
+
+__pycache__/
+*.py[cod]
