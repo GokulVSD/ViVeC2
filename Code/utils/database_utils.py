@@ -23,3 +23,11 @@ def retrieve(filename):
 def pt2df(FEATURE_SPACE):
     data = retrieve(f'latent_{FEATURE_SPACE}.pt')
     return pd.DataFrame(data).T
+
+# Reference: https://stackoverflow.com/questions/13331698/how-to-apply-a-function-to-two-columns-of-pandas-dataframe
+def combineRows(a, b):
+    return (a, b)
+
+def df2pt(df):
+    combineCol = df.apply(lambda x: test(x[0], x[1]), axis=1)
+    return combineCol.to_dict()
