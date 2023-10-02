@@ -18,3 +18,8 @@ def retrieve(filename):
     Retrieves .pt file in /Code/database/ as object.
     """
     return load(path.join(DATABASE_PATH, filename))
+
+
+def pt2df(FEATURE_SPACE):
+    data = retrieve(f'latent_{FEATURE_SPACE}.pt')
+    return pd.DataFrame(data).T
