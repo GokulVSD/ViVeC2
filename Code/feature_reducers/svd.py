@@ -1,5 +1,6 @@
-from numpy import argsort, array, diag, sign, sort, sqrt, zeros
+from numpy import argsort, diag, sign, sort, sqrt, zeros
 from numpy.linalg import eig
+from utils.vector_utils import feature_vectors_to_np_vectors
 
 
 class SVDReducer:
@@ -8,27 +9,17 @@ class SVDReducer:
     https://en.wikipedia.org/wiki/Singular_value_decomposition
     """
 
-    def __init__(self, vectors):
+    def __init__(self, feature_vectors, K):
         """
-        Accept vector space and preprocess.
+        Accept vector space and target dimensions, and preprocess.
+        This involves computing decomposition as D = U.S.VT.
         """
-        self.D = []
+        self.K = K
 
-        for label, vector in vectors.values():
-            self.D.append(vector)
+        D = feature_vectors_to_np_vectors(feature_vectors)
 
-        self.D = array(self.D)
-
-
-    def reduce_features(self, K):
-        """
-        Reduce number of features in input vector space to K using truncated SVD.
-        This function would be a lot simpler if we could just use numpy.linalg.svd,
-        but the project report does not explicitly provide permission, so we are
-        implementing it without it.
-        """
-        DT_D = self.D.T @ self.D
-        D_DT = self.D @ self.D.T
+        DT_D = D.T @ D
+        D_DT = D @ D.T
 
         Lambda_DT_D, V = eig(DT_D)
         Lambda_D_DT, U = eig(D_DT)
@@ -43,20 +34,34 @@ class SVDReducer:
 
         Lambda = sqrt(sort(Lambda_DT_D)[::-1])
 
+        small_dim = min(D.shape)
+
         # Lambda is a 1d vector representing the diagonal of a matrix. We need to
         # reconstruct the matrix in-order to perform matrix multiplication.
-        S = zeros((self.D.shape[0], self.D.shape[1]))
-        S[:self.D.shape[1], :self.D.shape[1]] = diag(Lambda)
+        S = zeros((D.shape[0], D.shape[1]))
+        S[:small_dim, :small_dim] = diag(Lambda[:small_dim])
 
 
         # D @ V and U @ S should be equal, however, since we are separately finding
         # Eigen vectors for DT_D and D_DT, they can be out of sync, since the negative
         # of an Eigen vector is also an Eigen vector. We check to see if signs differ,
         # and then updates V's sign to compensate.
-        same_sign = sign((self.D @ V)[0] * (U @ S)[0])
-        V = V * same_sign.reshape(1, -1)
+        same_sign = sign((D @ V)[0] * (U @ S)[0])
+        self.V = V * same_sign.reshape(1, -1)
 
-        # Gives back dataset.
-        # D_latent = U[:,:K] @ S[0:K,:K] @ V.T[:K,:]
+        # To get back the dataset:
+        # D_latent = U[:,:self.K] @ S[0:self.K,:self.K] @ self.V.T[:self.K,:]
 
-        return U[:,:K] @ S[:K,:K]
+
+    def reduce_features(self, feature_vectors):
+        """
+        Reduce number of features in input vector space to K (truncated SVD).
+        This uses the decompositions found during the __init__ function.
+        """
+
+        D = feature_vectors_to_np_vectors(feature_vectors)
+
+        # http://infolab.stanford.edu/~ullman/mmds/ch11.pdf 11.3.5
+        # Descriptive subset in latent space = D @ V.
+
+        return D @ self.V[:,:self.K]
