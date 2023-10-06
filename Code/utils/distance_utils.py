@@ -1,4 +1,5 @@
 from scipy.spatial.distance import cityblock, correlation, cosine
+import numpy as np
 
 FEATURE_SPACE_DISTANCE_MAP = {
     # Manhattan distance (City-block distance): This distance can be imagined as the length needed
@@ -43,6 +44,23 @@ def top_k_distance_ranker(k, query_vector, feature_vectors, distance_fn):
 
     return distances[:k]
 
+def find_centroids(feature_vectors):
+    previous_label = ""
+    item_count = 0
+    total_feature = 0
+    result = {}
+    for i, feature_item in enumerate(feature_vectors.items()):
+        label = feature_item[1][0]
+        feature = feature_item[1][1]
+        if item_count > 0 and label != previous_label:
+            result[previous_label] = total_feature/item_count
+            total_feature = feature
+            item_count = 1
+        else:
+            total_feature = np.add(total_feature, feature)
+            item_count += 1
+        previous_label = label
+    return result
 
 # K-Means modified for task 8, 10
 def getEachLabelCentroids(df, feature = "ResNet", fileName="task_2b_resnet_centers"):
