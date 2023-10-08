@@ -19,8 +19,3 @@ class LabelLabelSimilarity:
             result[i] = (current_label, arr)
         return result
 
-
-        
-            
-
-        
