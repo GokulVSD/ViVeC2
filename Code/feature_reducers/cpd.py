@@ -58,6 +58,15 @@ class CPDecomposition:
     #             result.append(distance)
     #     return np.array(result)
 
+
+    def get_similarity_matrix(self, feature_vectors):
+        """
+        Get the similarity matrix. Some techniques do not expose the similarity matrix,
+        for those, we just reduce the features and return.
+        """
+        return self.reduce_features(feature_vectors)
+
+
     def reduce_features(self, _ = []):
         config = "tensorlearn"
         if config == "tensorlearn":

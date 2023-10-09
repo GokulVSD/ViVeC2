@@ -30,8 +30,19 @@ class NNMFReducer:
             H = H * ((W.T @ D) / (W.T @ W @ H) + 1e-10)
             W = W * ((D @ H.T) / (W @ H @ H.T) + 1e-10)
 
+        self.W = W
         self.H = H
 
+
+    def get_similarity_matrix(self, feature_vectors):
+        """
+        Get the similarity matrix. Some techniques do not expose the similarity matrix,
+        for those, we just reduce the features and return.
+        """
+        W = self.W
+        # Delete so that the database object isn't too big.
+        del self.W
+        return W
 
 
     def reduce_features(self, feature_vectors):

@@ -30,7 +30,7 @@ class SVDReducer:
         i_2 = argsort(Lambda_D_DT)[::-1]
 
         V = V[:, i_1]
-        U = U[:, i_2]
+        self.U = U[:, i_2]
 
         Lambda = sqrt(sort(Lambda_DT_D)[::-1])
 
@@ -51,6 +51,17 @@ class SVDReducer:
 
         # To get back the dataset:
         # D_latent = U[:,:self.K] @ S[0:self.K,:self.K] @ self.V.T[:self.K,:]
+
+
+    def get_similarity_matrix(self, feature_vectors):
+        """
+        Get the similarity matrix. Some techniques do not expose the similarity matrix,
+        for those, we just reduce the features and return.
+        """
+        U = self.U
+        # Delete so that the database object isn't too big.
+        del self.U
+        return U[:,:self.K]
 
 
     def reduce_features(self, feature_vectors):
