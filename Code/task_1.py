@@ -3,6 +3,7 @@ from utils.dataset_utils import initialize_dataset
 from utils.database_utils import store
 import pandas as pd
 import numpy as np
+from sklearn.cluster import KMeans
 
 def format_feature_db(feature_db):
     """
@@ -54,7 +55,24 @@ def build_representatve_feature_db(feature_db, label_space, method):
                 fv = category_df['feature_vector'].tolist()
                 fv_np = np.array(fv)
                 rfv = np.average(fv_np, axis=0)
-                rep_feture_db[l]= rfv
+                # rep_feture_db[l]= rfv
+                rep_feture_db[l]= [rfv]
+    elif method == 'kmeans':
+        for l in label_space:
+            category_df = fmt_feature_df.loc[fmt_feature_df['label'] == l]
+            if category_df.shape[0] > 0:
+                cluster_centers = []
+                fv = category_df['feature_vector'].tolist()
+                fv_np = np.array(fv)
+
+                kmeans = KMeans(n_clusters=1, random_state=0, n_init="auto").fit(fv_np)
+                cluster_centers.append(kmeans.cluster_centers_[0])
+
+                kmeans = KMeans(n_clusters=5, random_state=0, n_init="auto").fit(fv_np)
+                for c in kmeans.cluster_centers_:
+                    cluster_centers.append(c)
+                
+                rep_feture_db[l]= cluster_centers
     
     return rep_feture_db
 
@@ -71,7 +89,7 @@ def main():
     # Iterate through the feature space to generate rep. feature vector for each lebel and store as dataset
     for feature_name in feature_space:
         feature_vectors = retrieve(f'{feature_name}.pt')
-        rep_label_feature = build_representatve_feature_db(feature_vectors, label_space, 'mean')
+        rep_label_feature = build_representatve_feature_db(feature_vectors, label_space, 'kmeans')
         rep_label_db_name = 'rep_label_' + feature_name + '.pt'
         store(rep_label_feature, rep_label_db_name)
 
