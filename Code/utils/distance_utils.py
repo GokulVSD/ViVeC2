@@ -33,17 +33,49 @@ def get_distance_fn(feature_space):
 
 
 def top_k_distance_ranker(k, query_vector, feature_vectors, distance_fn):
-
     return all_distance_ranker(query_vector, feature_vectors, distance_fn)[:k]
 
 
-def all_distance_ranker(query_vector, feature_vectors, distance_fn):
+def top_k_min_distance_ranker(k, query_vectors, feature_vectors, distance_fn):
+    return min_distance_ranker(query_vectors, feature_vectors, distance_fn)[:k]
 
+
+def all_distance_ranker(query_vector, feature_vectors, distance_fn):
+    """
+    Computes distance of query vector to all vectors in feature_vectors,
+    returns sorted by distance (distance, img_id, label)
+    """
     distances = []
 
     for img_id, feature_tuple in feature_vectors.items():
         label, feature_vector = feature_tuple
         distances.append((distance_fn(query_vector, feature_vector), img_id, label))
+
+    distances = sorted(distances)
+
+    return distances
+
+
+def min_distance_ranker(query_vectors, feature_vectors, distance_fn):
+    """
+    Computes distance of each vector in feature_vectors to each vector
+    in query_vectors. Includes only the smallest distance to a query
+    vector in the result (one query vector is selected for every
+    feature_vector, which happens to have the min distance to it).
+    Returns sorted by distance (distance, img_id, label)
+    """
+    distances = []
+
+    for img_id, feature_tuple in feature_vectors.items():
+        label, feature_vector = feature_tuple
+
+        query_distances = []
+        for query_vector in query_vectors:
+            query_distances.append((distance_fn(query_vector, feature_vector), img_id, label))
+
+        query_distances = sorted(query_distances)
+
+        distances.append(query_distances[0])
 
     distances = sorted(distances)
 

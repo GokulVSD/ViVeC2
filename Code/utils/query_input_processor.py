@@ -23,3 +23,15 @@ def get_query_image(image_input):
     else:
 
         return open(path.join(INPUT_PATH, image_input))
+
+
+def check_label_is_valid(label):
+    """
+    Checks to see that the provided label is present in Caltech101.
+    """
+    print("Input label: ", label, "\n\n")
+
+    dataset = initialize_dataset()
+
+    if label not in dataset.categories:
+        raise Exception("Label does not exist in Caltech101.")
