@@ -2,6 +2,28 @@ from numpy import array
 from sklearn.cluster import KMeans
 
 
+def rep_label_vectors_to_feature_vectors(rep_label_vectors):
+    """
+    This function takes in representative label vectors and outputs
+    feature vectors, in order to facilitate usage with distance utils.
+    Input: dict: label -> list of representative vectors
+    Output: dict: Index -> (label, representative vector)
+
+    IMPORTANT: Since we are creating multiple dictionary entries for one
+    dictionary entry of rep_label_vectors, the Index is meaningless and
+    should not be used as IMG_ID.
+    """
+    feature_vectors = {}
+    index = 0
+
+    for label, rep_vectors in rep_label_vectors.items():
+        for rep_vector in rep_vectors:
+            feature_vectors[index] = (label, rep_vector)
+            index += 1
+
+    return feature_vectors
+
+
 def feature_vectors_to_np_vectors(feature_vectors):
     vectors = []
 

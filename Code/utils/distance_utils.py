@@ -40,6 +40,29 @@ def top_k_min_distance_ranker(k, query_vectors, feature_vectors, distance_fn):
     return min_distance_ranker(query_vectors, feature_vectors, distance_fn)[:k]
 
 
+def top_k_unique_label_distance_ranker(k, query_vector, feature_vectors, distance_fn):
+    """
+    Same as top k distance ranker but only includes the distance to the closest entry
+    in feature vectors for a particular label.
+    """
+    distances = all_distance_ranker(query_vector, feature_vectors, distance_fn)
+
+    unique_label_distances = []
+    found_labels = set()
+
+    for dist_tuple in distances:
+        dist, img_id, label = dist_tuple
+
+        if label not in found_labels:
+            found_labels.add(label)
+            unique_label_distances.append(dist_tuple)
+
+            if len(unique_label_distances) == k:
+                break
+
+    return unique_label_distances
+
+
 def all_distance_ranker(query_vector, feature_vectors, distance_fn):
     """
     Computes distance of query vector to all vectors in feature_vectors,
