@@ -1,4 +1,4 @@
-from numpy import argsort, diag, sign, sort, sqrt, zeros
+from numpy import argsort, diag, sign, sort, sqrt, zeros, real
 from numpy.linalg import eig
 from utils.vector_utils import feature_vectors_to_np_vectors
 
@@ -61,7 +61,7 @@ class SVDReducer:
         U = self.U
         # Delete so that the database object isn't too big.
         del self.U
-        return U[:,:self.K]
+        return real(U[:,:self.K])
 
 
     def reduce_features(self, feature_vectors):
@@ -75,4 +75,4 @@ class SVDReducer:
         # http://infolab.stanford.edu/~ullman/mmds/ch11.pdf 11.3.5
         # Descriptive subset in latent space = D @ V.
 
-        return D @ self.V[:,:self.K]
+        return real(D @ self.V[:,:self.K])
