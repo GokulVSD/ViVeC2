@@ -34,15 +34,8 @@ def get_distance_fn(feature_space):
 
 def top_k_distance_ranker(k, query_vector, feature_vectors, distance_fn):
 
-    distances = []
+    return all_distance_ranker(query_vector, feature_vectors, distance_fn)[:k]
 
-    for img_id, feature_tuple in feature_vectors.items():
-        label, feature_vector = feature_tuple
-        distances.append((distance_fn(query_vector, feature_vector), img_id, label))
-
-    distances = sorted(distances)
-
-    return distances[:k]
 
 def all_distance_ranker(query_vector, feature_vectors, distance_fn):
 
