@@ -103,22 +103,3 @@ def min_distance_ranker(query_vectors, feature_vectors, distance_fn):
     distances = sorted(distances)
 
     return distances
-
-
-def find_centroids(feature_vectors):
-    previous_label = ""
-    item_count = 0
-    total_feature = 0
-    result = {}
-    for i, feature_item in enumerate(feature_vectors.items()):
-        label = feature_item[1][0]
-        feature = feature_item[1][1]
-        if item_count > 0 and label != previous_label:
-            result[previous_label] = total_feature/item_count
-            total_feature = feature
-            item_count = 1
-        else:
-            total_feature = np.add(total_feature, feature)
-            item_count += 1
-        previous_label = label
-    return result

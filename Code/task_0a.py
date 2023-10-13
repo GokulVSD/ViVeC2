@@ -17,8 +17,7 @@ from feature_models.hog import HOGExtractor
 from feature_models.resnet import ResNetExtractor
 from utils.database_utils import store
 from utils.dataset_utils import initialize_dataset, get_image_with_label
-from utils.vector_utils import flatten_feature_vectors, get_representative_vectors_using_kmeans
-from pandas import DataFrame
+from utils.vector_utils import get_representative_vectors_for_labels
 
 
 def main():
@@ -94,13 +93,14 @@ def main():
     print("\nRunning auxiliary task of finding representative vectors for labels.")
 
     all_labels = dataset.categories
+    K = 5
 
-    store(get_representative_vectors_for_labels(color_vectors, all_labels), "rep_label_color.pt")
-    store(get_representative_vectors_for_labels(hog_vectors, all_labels), "rep_label_hog.pt")
-    store(get_representative_vectors_for_labels(avgpool_vectors, all_labels), "rep_label_avgpool.pt")
-    store(get_representative_vectors_for_labels(layer3_vectors, all_labels), "rep_label_layer3.pt")
-    store(get_representative_vectors_for_labels(fc_vectors, all_labels), "rep_label_fc.pt")
-    store(get_representative_vectors_for_labels(resnet_output_vectors, all_labels), "rep_label_resnet_output.pt")
+    store(get_representative_vectors_for_labels(color_vectors, all_labels, K), "rep_label_color.pt")
+    store(get_representative_vectors_for_labels(hog_vectors, all_labels, K), "rep_label_hog.pt")
+    store(get_representative_vectors_for_labels(avgpool_vectors, all_labels, K), "rep_label_avgpool.pt")
+    store(get_representative_vectors_for_labels(layer3_vectors, all_labels, K), "rep_label_layer3.pt")
+    store(get_representative_vectors_for_labels(fc_vectors, all_labels, K), "rep_label_fc.pt")
+    store(get_representative_vectors_for_labels(resnet_output_vectors, all_labels, K), "rep_label_resnet_output.pt")
 
     print(
     """
@@ -108,19 +108,6 @@ def main():
     > Stored in binary form, the key is the label, val is a list of representative feature vectors.
     """
     )
-
-
-def get_representative_vectors_for_labels(feature_vectors, all_labels):
-
-    rep_label_vectors = {}
-
-    df = DataFrame(flatten_feature_vectors(feature_vectors), columns=["img_id", "label", "vector"])
-
-    for label in all_labels:
-        label_df = df.loc[df['label'] == label]
-        rep_label_vectors[label] = get_representative_vectors_using_kmeans(label_df["vector"].tolist(), 5)
-
-    return rep_label_vectors
 
 
 if __name__ == "__main__":

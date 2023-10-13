@@ -1,5 +1,6 @@
 from numpy import array
 from sklearn.cluster import KMeans
+from pandas import DataFrame
 
 
 def rep_label_vectors_to_feature_vectors(rep_label_vectors):
@@ -61,11 +62,27 @@ def flatten_feature_vectors(feature_vectors):
 def get_representative_vectors_using_kmeans(vectors, K):
     """
     Clusters the provided vectors into K clusters, and returns the list of K cluster
-    centers.
+    centers. if K is 1, returns just a vector.
     """
     cluster_centers = []
     kmeans = KMeans(n_clusters=K, random_state=42, n_init="auto").fit(array(vectors))
     for cluster_center in kmeans.cluster_centers_:
         cluster_centers.append(cluster_center)
 
+    if K == 1:
+        return cluster_centers[0]
+
     return cluster_centers
+
+
+def get_representative_vectors_for_labels(feature_vectors, all_labels, K):
+
+    rep_label_vectors = {}
+
+    df = DataFrame(flatten_feature_vectors(feature_vectors), columns=["img_id", "label", "vector"])
+
+    for label in all_labels:
+        label_df = df.loc[df['label'] == label]
+        rep_label_vectors[label] = get_representative_vectors_using_kmeans(label_df["vector"].tolist(), K)
+
+    return rep_label_vectors
