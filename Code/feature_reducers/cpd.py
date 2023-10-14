@@ -10,11 +10,9 @@ MAX_ITERATIONS = 100
 class CPDecomposition:
     def __init__(self, feature_vectors, K):
         self.K = K
-        self.tensor = self.create_feature_format(feature_vectors)
 
     def create_feature_format(self, feature_vectors):
         # For feature space of every image, find distance from cluster centers
-
         labels = initialize_dataset().categories
         result = []
         for i, feature_item in enumerate(feature_vectors.items()): #loop over all images
@@ -57,26 +55,25 @@ class CPDecomposition:
         return self.reduce_features(feature_vectors)
 
 
-    def reduce_features(self, _ = []):
+    def reduce_features(self, feature_vectors):
+        tensor = self.create_feature_format(feature_vectors)
         config = "tensorly"
         if config == "tensorlearn":
             import tensorlearn as tl
             print("Running ALS using tensorlearn for finding CP decomposition...")
-            weights, factors = tl.cp_als_rand_init(self.tensor, self.K, MAX_ITERATIONS)
+            weights, factors = tl.cp_als_rand_init(tensor, self.K, MAX_ITERATIONS)
             tensor_hat=tl.cp_to_tensor(weights, factors)
-            error=tensor_hat-self.tensor
-            error_ratio=tl.tensor_frobenius_norm(error)/tl.tensor_frobenius_norm(self.tensor)
+            error=tensor_hat-tensor
+            error_ratio=tl.tensor_frobenius_norm(error)/tl.tensor_frobenius_norm(tensor)
             recovery_rate = 1 - error_ratio
             print(f'The recovery rate is {recovery_rate:2.0%}')
         else:
             import tensorly as tl
             from tensorly.decomposition import parafac
             print("Running ALS using tensorly for finding CP decomposition...")
-            decomposition, errors = parafac(self.tensor, self.K, return_errors=True, init='random', tol=1e-4, n_iter_max=MAX_ITERATIONS, normalize_factors=True)
+            decomposition, errors = parafac(tensor, self.K, return_errors=True, init='random', tol=1e-4, n_iter_max=MAX_ITERATIONS, normalize_factors=True)
 
             weights, factors =  decomposition #tl.parafac2_tensor.apply_parafac2_projections(decomposition)
-            # reconstruction_error = la.norm(est_tensor - self.tensor)
-            # recovery_rate = 1 - reconstruction_error/la.norm(self.tensor)
-            # print(f'The recovery rate is {recovery_rate:2.0%}')
-        self.factors = factors
+        self.image_latent_space_weights = factors[0]
+        self.label_latent_space_weights = factors[1]
         return factors[0]
