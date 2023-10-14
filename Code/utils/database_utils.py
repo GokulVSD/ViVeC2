@@ -2,6 +2,7 @@ from os import path
 from torch import load, save
 import blosc
 import pickle
+from pathlib import Path
 
 DATABASE_PATH = path.join(path.dirname(path.dirname( __file__ )), 'database')
 
@@ -20,6 +21,14 @@ def retrieve(filename):
     Retrieves .pt file in /Code/database/ as object.
     """
     return load(path.join(DATABASE_PATH, filename))
+
+
+def exists(filename):
+    """
+    Check if file exists.
+    """
+    file = Path(path.join(DATABASE_PATH, filename))
+    return file.is_file()
 
 
 def compressed_store(obj, filename):

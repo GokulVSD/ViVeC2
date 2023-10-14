@@ -52,6 +52,8 @@ class SVDReducer:
         # To get back the dataset:
         # D_latent = U[:,:self.K] @ S[0:self.K,:self.K] @ self.V.T[:self.K,:]
 
+        self.V = self.V[:,:self.K]
+
 
     def get_similarity_matrix(self, feature_vectors):
         """
@@ -75,4 +77,4 @@ class SVDReducer:
         # http://infolab.stanford.edu/~ullman/mmds/ch11.pdf 11.3.5
         # Descriptive subset in latent space = D @ V.
 
-        return real(D @ self.V[:,:self.K])
+        return real(D @ self.V)

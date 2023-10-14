@@ -1,5 +1,4 @@
 import numpy as np
-from scipy.spatial.distance import cosine
 from utils.vector_utils import get_representative_vectors_for_labels
 from utils.distance_utils import cosine_similarity
 
