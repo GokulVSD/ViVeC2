@@ -45,6 +45,14 @@ def top_k_unique_label_distance_ranker(k, query_vector, feature_vectors, distanc
     Same as top k distance ranker but only includes the distance to the closest entry
     in feature vectors for a particular label.
     """
+    return all_unique_label_distance_ranker(query_vector, feature_vectors, distance_fn)[:k]
+
+
+def all_unique_label_distance_ranker(query_vector, feature_vectors, distance_fn):
+    """
+    Same as all distance ranker but only includes the distance to the closest entry
+    in feature vectors for a particular label.
+    """
     distances = all_distance_ranker(query_vector, feature_vectors, distance_fn)
 
     unique_label_distances = []
@@ -56,9 +64,6 @@ def top_k_unique_label_distance_ranker(k, query_vector, feature_vectors, distanc
         if label not in found_labels:
             found_labels.add(label)
             unique_label_distances.append(dist_tuple)
-
-            if len(unique_label_distances) == k:
-                break
 
     return unique_label_distances
 
@@ -103,3 +108,7 @@ def min_distance_ranker(query_vectors, feature_vectors, distance_fn):
     distances = sorted(distances)
 
     return distances
+
+
+def cosine_similarity(vector_a, vector_b):
+    return max(1 - cosine(vector_a, vector_b), 0)

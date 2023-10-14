@@ -1,6 +1,7 @@
 from numpy import array
 from sklearn.cluster import KMeans
 from pandas import DataFrame
+from utils.distance_utils import all_unique_label_distance_ranker, cosine_similarity
 
 
 def rep_label_vectors_to_feature_vectors(rep_label_vectors):
@@ -86,3 +87,24 @@ def get_representative_vectors_for_labels(feature_vectors, all_labels, K):
         rep_label_vectors[label] = get_representative_vectors_using_kmeans(label_df["vector"].tolist(), K)
 
     return rep_label_vectors
+
+
+def get_image_label_similarity_vector(vector, rep_label_vectors, all_labels):
+    """
+    Given an image vector, and the representative label vectors under the same vector
+    space, constructs a similarity vector using the same order as all_labels.
+    """
+    rep_feature_vectors = rep_label_vectors_to_feature_vectors(rep_label_vectors)
+
+    similarities = all_unique_label_distance_ranker(vector, rep_feature_vectors, cosine_similarity)
+
+    label_similarity = {}
+    for i in range(len(similarities)):
+        similarity, dummy_img_id, label = similarities[i]
+        label_similarity[label] = similarity
+
+    image_label_similarity = []
+    for label in all_labels:
+        image_label_similarity.append(label_similarity[label])
+
+    return array(image_label_similarity)
