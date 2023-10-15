@@ -108,3 +108,17 @@ def get_image_label_similarity_vector(vector, rep_label_vectors, all_labels):
         image_label_similarity.append(label_similarity[label])
 
     return array(image_label_similarity)
+
+
+def get_image_image_similarity_vector(vector, feature_vectors):
+    """
+    Given an image vector, and the feature space, generate an image-image similarity
+    vector.
+    """
+    image_label_similarity = []
+
+    for img_id, feature_tuple in feature_vectors.items():
+        label, feature_vector = feature_tuple
+        image_label_similarity.append(cosine_similarity(vector, feature_vector))
+
+    return array(image_label_similarity)

@@ -14,5 +14,5 @@ class ImageImageSimilarity:
             for idx, image_id in enumerate(image_id_list):
                 feature_vec = self.feature_vectors[image_id][1]
                 arr[idx] = cosine_similarity(ref_feature_vec, feature_vec)
-            result[i] = (ref_image_label, arr)
+            result[ref_image_id] = (ref_image_label, arr)
         return result
