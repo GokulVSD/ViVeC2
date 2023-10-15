@@ -1,7 +1,8 @@
 import numpy as np
 from utils.vector_utils import get_representative_vectors_for_labels
-from utils.distance_utils import cosine_similarity
+from utils.distance_utils import get_distance_fn
 
+FEATURE_SPACE = "label_label_similarity"
 class LabelLabelSimilarity:
     def __init__(self, feature_vectors, all_labels):
         self.feature_vectors = feature_vectors
@@ -15,7 +16,8 @@ class LabelLabelSimilarity:
             arr = np.zeros(shape=(len(self.all_labels)))
             for j, label in enumerate(self.all_labels):
                 # find similarity between current_centroid and centroids[label] and store in array
-                arr[j] = cosine_similarity(current_centroid, centroids[label])
+                distance_fn = get_distance_fn(FEATURE_SPACE)
+                arr[j] = distance_fn(current_centroid, centroids[label])
             result[i] = (current_label, arr)
         return result
 

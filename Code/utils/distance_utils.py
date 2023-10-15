@@ -1,6 +1,9 @@
 from scipy.spatial.distance import cityblock, correlation, cosine
 import numpy as np
 
+def cosine_similarity(vector_a, vector_b):
+    return max(1 - cosine(vector_a, vector_b), 0)
+
 FEATURE_SPACE_DISTANCE_MAP = {
     # Manhattan distance (City-block distance): This distance can be imagined as the length needed
     # to move between two points in a grid where you can only move up, down, left or right. This
@@ -22,6 +25,7 @@ FEATURE_SPACE_DISTANCE_MAP = {
     "layer3": cosine,
     "fc": cosine,
     "resnet_output": cosine,
+    "label_label_similarity": cosine_similarity,
 }
 
 
@@ -108,7 +112,3 @@ def min_distance_ranker(query_vectors, feature_vectors, distance_fn):
     distances = sorted(distances)
 
     return distances
-
-
-def cosine_similarity(vector_a, vector_b):
-    return max(1 - cosine(vector_a, vector_b), 0)
