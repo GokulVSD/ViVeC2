@@ -1,3 +1,4 @@
+from numpy import array
 from scipy.spatial.distance import cityblock, correlation, cosine, euclidean
 
 def cosine_similarity(vector_a, vector_b):
@@ -158,7 +159,7 @@ def min_distance_ranker(query_vectors, feature_vectors, distance_fn):
 
 def distance_matrix(feature_vectors, distance_fn):
     """
-    Computes an N x N matrix of distance between every image in the given vector space 
+    Computes an N x N matrix of distance between every image in the given vector space
     """
     dm = []
     for _, (_, query_vector) in feature_vectors.items():
@@ -166,5 +167,5 @@ def distance_matrix(feature_vectors, distance_fn):
         for _, (_, target_vector) in feature_vectors.items():
             d.append(distance_fn(query_vector, target_vector))
         dm.append(d)
-    
-    return np.array(dm)
+
+    return array(dm)
