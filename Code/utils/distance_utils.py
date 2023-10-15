@@ -1,4 +1,4 @@
-from scipy.spatial.distance import cityblock, correlation, cosine
+from scipy.spatial.distance import cityblock, correlation, cosine, euclidean
 import numpy as np
 
 def cosine_similarity(vector_a, vector_b):
@@ -26,6 +26,8 @@ FEATURE_SPACE_DISTANCE_MAP = {
     "fc": cosine,
     "resnet_output": cosine,
     "label_label_similarity": cosine_similarity,
+    "task_9": cityblock,
+    "task_10": euclidean,
 }
 
 
