@@ -29,9 +29,19 @@ def check_label_is_valid(label):
     """
     Checks to see that the provided label is present in Caltech101.
     """
-    print("Input label: ", label, "\n\n")
+    print("Input label: ", label)
 
     dataset = initialize_dataset()
-
-    if label not in dataset.categories:
+    valid_labels = dataset.categories
+    if label.isnumeric():
+        try:
+            label = valid_labels[int(label)]
+        except Exception as e:
+            raise Exception("Input Label ID is out of bounds.")
+    elif label not in valid_labels:
         raise Exception("Label does not exist in Caltech101.")
+    else:
+        pass
+
+    print("Output label:", label, "\n\n")
+    return label
