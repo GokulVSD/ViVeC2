@@ -1,6 +1,7 @@
 import numpy as np
-from utils.distance_utils import cosine_similarity
+from utils.distance_utils import get_distance_fn
 
+FEATURE_SPACE = "image_image_similarity"
 class ImageImageSimilarity:
     def __init__(self, feature_vectors):
         self.feature_vectors = feature_vectors
@@ -13,6 +14,7 @@ class ImageImageSimilarity:
             arr = np.zeros(shape=(len(image_id_list)))
             for idx, image_id in enumerate(image_id_list):
                 feature_vec = self.feature_vectors[image_id][1]
-                arr[idx] = cosine_similarity(ref_feature_vec, feature_vec)
+                distance_fn = get_distance_fn(FEATURE_SPACE)
+                arr[idx] = distance_fn(ref_feature_vec, feature_vec)
             result[ref_image_id] = (ref_image_label, arr)
         return result
