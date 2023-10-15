@@ -1,10 +1,12 @@
 from scipy.spatial.distance import cityblock, correlation, cosine, euclidean
-import numpy as np
 
 def cosine_similarity(vector_a, vector_b):
     return max(1 - cosine(vector_a, vector_b), 0)
 
-FEATURE_SPACE_DISTANCE_MAP = {
+
+# Distance functions for latent semantics were chosen based on subjective analysis of the
+# results.
+DISTANCE_MAP = {
     # Manhattan distance (City-block distance): This distance can be imagined as the length needed
     # to move between two points in a grid where you can only move up, down, left or right. This
     # measure is sensitive to differences along each dimension of the feature vectors, capturing
@@ -13,29 +15,67 @@ FEATURE_SPACE_DISTANCE_MAP = {
     # does not square the differences like Euclidean distance, it is less susceptible outliers
     # when many dimensions differ.
     "color": cityblock,
+    "t7LS1_color": correlation,
+    "t8LS1_color": cityblock,
+    "t9LS1_color": cityblock,
+    "t10LS1_color": euclidean,
     # Correlation similarity: This measures the linear relationship between HOG feature vectors,
     # and performs well with features that have a strong linear correlation or dependency in
     # their gradient orientation distributions, taking into account directionality.
     "hog": correlation,
-    # Cosine similarity: We use Cosine since the output of ResNet layers are
+    "t7LS2_hog": cosine,
+    "t8LS2_hog": cosine,
+    "t9LS2_hog": cosine,
+    "t10LS2_hog": correlation,
+    # Cosine distance: We use Cosine since the output of ResNet layers are
     # normalized, reducing the importance of magnitude. It is good at discerning
     # semantic or structural similarity rather than their absolute feature values.
     # It also works well with sparse feature spaces such as those found in CNNs.
     "avgpool": cosine,
+    "t7LS3_avgpool": cosine,
+    "t8LS3_avgpool": cosine,
+    "t9LS3_avgpool": cosine,
+    "t10LS3_avgpool": cosine,
     "layer3": cosine,
+    "t7LS4_layer3": cosine,
+    "t8LS4_layer3": cosine,
+    "t9LS4_layer3": cosine,
+    "t10LS4_layer3": cosine,
     "fc": cosine,
     "resnet": cosine,
+    "t7LS1_resnet": euclidean,
+    "t8LS1_resnet": euclidean,
+    "t9LS1_resnet": cosine,
+    "t10LS1_resnet": euclidean,
+    "t7LS2_resnet": cityblock,
+    "t8LS2_resnet": cityblock,
+    "t9LS2_resnet": cosine,
+    "t10LS2_resnet": cityblock,
+    "t7LS3_resnet": correlation,
+    "t8LS3_resnet": correlation,
+    "t9LS3_resnet": cosine,
+    "t10LS3_resnet": cosine,
+    "t7LS4_resnet": cosine,
+    "t8LS4_resnet": cosine,
+    "t9LS4_resnet": cosine,
+    "t10LS4_resnet": cosine,
+    # Cosine similarity is used when we try to construct label_label or image_image similarity
+    # matrices. It is good at discerning semantic or structural similarity rather
+    # than their absolute feature values.
     "label_label_similarity": cosine_similarity,
-    "task_9": cityblock,
-    "task_10": euclidean,
+    "image_image_similarity": cosine_similarity,
 }
 
 
-def get_distance_fn(feature_space):
+def get_distance_fn(key):
     """
     Retrieve the distance function chosen for the specific feature space.
     """
-    return FEATURE_SPACE_DISTANCE_MAP[feature_space]
+    # If we have not defined a distance function for a latent semantic, use the
+    # distance function corresponding to the feature space.
+    if key not in DISTANCE_MAP:
+        return DISTANCE_MAP['_'.join(key.split('_')[1:])]
+    return DISTANCE_MAP[key]
 
 
 def top_k_distance_ranker(k, query_vector, feature_vectors, distance_fn):
