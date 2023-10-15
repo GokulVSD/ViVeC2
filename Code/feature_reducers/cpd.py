@@ -1,79 +1,83 @@
-import numpy as np
-import numpy.linalg as la
-from sklearn.metrics.pairwise import paired_distances
-from scipy.spatial.distance import euclidean
+from numpy import zeros, array
 from utils.dataset_utils import initialize_dataset
-from utils.vector_utils import get_representative_vectors_for_labels
+from tensorly.decomposition import parafac
+from utils.vector_utils import feature_vectors_to_np_vectors
 
-MAX_ITERATIONS = 100
 
 class CPDecomposition:
+    """
+    CP Descomposition, produces 3 mode factors:
+    factor 1: image - weight
+    factor 2: label - weight
+    factor 3: feature - weight
+    """
+
     def __init__(self, feature_vectors, K):
         self.K = K
 
-    def create_feature_format(self, feature_vectors):
-        # For feature space of every image, find distance from cluster centers
-        labels = initialize_dataset().categories
-        result = []
-        for i, feature_item in enumerate(feature_vectors.items()): #loop over all images
-            # find distance from every center in find_centers(feature_vectors)
-            distance = []
-            _, feature_tuple = feature_item
+        tensor = self._create_tensor(feature_vectors)
+
+        decomposition, errors = parafac(
+            tensor,
+            rank=self.K,
+            return_errors=True,
+            init='random',
+            tol=1e-4,
+            n_iter_max=100,
+            normalize_factors=True
+        )
+
+        weights, factors =  decomposition
+
+        self.factors = factors
+
+
+    def _create_tensor(self, feature_vectors):
+        tensor = []
+
+        all_labels = initialize_dataset().categories
+
+        for feature_item in feature_vectors.items():
+            img_id, feature_tuple = feature_item
             current_label, current_feature_vector = feature_tuple
 
-            # distance = len(labels) x len(feature vector) array
-            for label in labels:
+            label_feature_distances = []
+
+            for label in all_labels:
                 if label == current_label:
-                    distance.append(current_feature_vector)
+                    label_feature_distances.append(current_feature_vector)
                 else:
-                    distance.append(np.zeros(len(current_feature_vector)))   
-            result.append(distance)
-        print(np.array(result).shape)
-        return np.array(result)
+                    label_feature_distances.append(zeros(len(current_feature_vector)))
+
+            tensor.append(label_feature_distances)
+
+        return array(tensor)
 
 
-    # def create_feature_format1(self, feature_vectors):
-    #     # For feature space of every image, find distance from cluster centers
-    #     centers = self.find_centers(feature_vectors)
-    #     result = []
-    #     for i in range(len(feature_vectors)): #loop over all images
-    #         # find distance from every center in find_centers(feature_vectors)
-    #         distance = []
-    #         if i % 2 == 0:
-    #             # distance = len(labels) x len(feature vector) array
-    #             for label in centers:
-    #                 distance.append(np.abs(feature_vectors[i][1] - centers[label]))
-    #             result.append(distance)
-    #     return np.array(result)
+    def get_image_weight(self):
+        return self.factors[0]
 
 
-    def get_similarity_matrix(self, feature_vectors):
-        """
-        Get the similarity matrix. Some techniques do not expose the similarity matrix,
-        for those, we just reduce the features and return.
-        """
-        return self.reduce_features(feature_vectors)
+    def get_label_weight(self):
+        return self.factors[1]
+
+
+    def get_feature_weight(self):
+        return self.factors[2]
 
 
     def reduce_features(self, feature_vectors):
-        tensor = self.create_feature_format(feature_vectors)
-        config = "tensorly"
-        if config == "tensorlearn":
-            import tensorlearn as tl
-            print("Running ALS using tensorlearn for finding CP decomposition...")
-            weights, factors = tl.cp_als_rand_init(tensor, self.K, MAX_ITERATIONS)
-            tensor_hat=tl.cp_to_tensor(weights, factors)
-            error=tensor_hat-tensor
-            error_ratio=tl.tensor_frobenius_norm(error)/tl.tensor_frobenius_norm(tensor)
-            recovery_rate = 1 - error_ratio
-            print(f'The recovery rate is {recovery_rate:2.0%}')
-        else:
-            import tensorly as tl
-            from tensorly.decomposition import parafac
-            print("Running ALS using tensorly for finding CP decomposition...")
-            decomposition, errors = parafac(tensor, self.K, return_errors=True, init='random', tol=1e-4, n_iter_max=MAX_ITERATIONS, normalize_factors=True)
+        """
+        Reduce number of features in input vector space to K.
+        This uses the decompositions found during the __init__ function.
+        """
 
-            weights, factors =  decomposition #tl.parafac2_tensor.apply_parafac2_projections(decomposition)
-        self.image_latent_space_weights = factors[0]
-        self.label_latent_space_weights = factors[1]
-        return factors[0]
+        D = feature_vectors_to_np_vectors(feature_vectors)
+
+        # The intuition here is that CP decomposotion is a specialized
+        # form of Tucker decomposition, which itself is a higher order
+        # SVD. Therefore, using the same argument made in the reduce_features
+        # function of SVDReducer, we can multiply D with the feature factor
+        # to get an image latent semantic.
+
+        return D @ self.factors[2]
