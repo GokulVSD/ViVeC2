@@ -1,5 +1,4 @@
 from scipy.spatial.distance import cityblock, correlation, cosine, euclidean
-import numpy as np
 
 def cosine_similarity(vector_a, vector_b):
     return max(1 - cosine(vector_a, vector_b), 0)
