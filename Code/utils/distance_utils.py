@@ -114,3 +114,17 @@ def min_distance_ranker(query_vectors, feature_vectors, distance_fn):
     distances = sorted(distances)
 
     return distances
+
+
+def distance_matrix(feature_vectors, distance_fn):
+    """
+    Computes an N x N matrix of distance between every image in the given vector space 
+    """
+    dm = []
+    for _, (_, query_vector) in feature_vectors.items():
+        d = []
+        for _, (_, target_vector) in feature_vectors.items():
+            d.append(distance_fn(query_vector, target_vector))
+        dm.append(d)
+    
+    return np.array(dm)
