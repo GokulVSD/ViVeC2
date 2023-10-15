@@ -24,7 +24,7 @@ FEATURE_SPACE_DISTANCE_MAP = {
     "avgpool": cosine,
     "layer3": cosine,
     "fc": cosine,
-    "resnet_output": cosine,
+    "resnet": cosine,
     "label_label_similarity": cosine_similarity,
     "task_9": cityblock,
     "task_10": euclidean,

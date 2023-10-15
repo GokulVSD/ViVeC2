@@ -35,7 +35,7 @@ def main():
     avgpool_vectors = {}
     layer3_vectors = {}
     fc_vectors = {}
-    resnet_output_vectors = {}
+    resnet_vectors = {}
 
     for img_id in range(len(dataset)):
 
@@ -63,7 +63,7 @@ def main():
 
         fc_vectors[img_id] = (label, resnet.get_fc_vector())
 
-        resnet_output_vectors[img_id] = (label, resnet.get_output_vector())
+        resnet_vectors[img_id] = (label, resnet.get_output_vector())
 
 
     # Display samples.
@@ -73,7 +73,7 @@ def main():
     print("\nAvgPool vector: ", avgpool_vectors[0], "\nLength: ", len(avgpool_vectors[0][1]))
     print("\nLayer3 vector: ", layer3_vectors[0], "\nLength: ", len(layer3_vectors[0][1]))
     print("\nFC vector: ", fc_vectors[0], "\nLength: ", len(fc_vectors[0][1]))
-    print("\nResNet output vector: ", resnet_output_vectors[0], "\nLength: ", len(resnet_output_vectors[0][1]))
+    print("\nResNet vector: ", resnet_vectors[0], "\nLength: ", len(resnet_vectors[0][1]))
 
     # Save all vectors
     store(color_vectors, "color.pt")
@@ -81,7 +81,7 @@ def main():
     store(avgpool_vectors, "avgpool.pt")
     store(layer3_vectors, "layer3.pt")
     store(fc_vectors, "fc.pt")
-    store(resnet_output_vectors, "resnet_output.pt")
+    store(resnet_vectors, "resnet.pt")
 
     print(
     """
@@ -100,7 +100,7 @@ def main():
     store(get_representative_vectors_for_labels(avgpool_vectors, all_labels, K), "rep_label_avgpool.pt")
     store(get_representative_vectors_for_labels(layer3_vectors, all_labels, K), "rep_label_layer3.pt")
     store(get_representative_vectors_for_labels(fc_vectors, all_labels, K), "rep_label_fc.pt")
-    store(get_representative_vectors_for_labels(resnet_output_vectors, all_labels, K), "rep_label_resnet_output.pt")
+    store(get_representative_vectors_for_labels(resnet_vectors, all_labels, K), "rep_label_resnet.pt")
 
     print(
     """
