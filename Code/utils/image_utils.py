@@ -1,4 +1,5 @@
 from torchvision.transforms import transforms
+from matplotlib import pyplot as plt
 
 
 def convert_to_rgb(pil_img):
@@ -28,3 +29,16 @@ def partition_to_grid(pil_img, num_rows, num_cols, hor_pixels, ver_pixels):
             )
 
     return grid
+
+
+def display_images(img, title_text=""):
+    # pil_img = convert_to_pil_image(img)
+    plt.imshow(img)
+    if len(title_text) > 0:
+        plt.title(title_text)
+
+
+def save_image(img, path, title="", show=True):
+    if show:
+        display_images(img, title)
+    plt.savefig(path)
