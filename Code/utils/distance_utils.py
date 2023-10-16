@@ -1,3 +1,4 @@
+from numpy import array
 from scipy.spatial.distance import cityblock, correlation, cosine, euclidean
 from numpy import ndarray, array
 
@@ -170,7 +171,7 @@ def feature_vectors_to_np_vectors(feature_vectors):
 
 def distance_matrix(feature_vectors, distance_fn):
     """
-    Computes an N x N matrix of distance between every image in the given vector space 
+    Computes an N x N matrix of distance between every image in the given vector space
     """
     feature_vectors = feature_vectors_to_np_vectors(feature_vectors)
     dm = []
