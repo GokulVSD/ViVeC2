@@ -1,4 +1,4 @@
-from numpy import array
+from numpy import array, ndarray
 from sklearn.cluster import KMeans
 from pandas import DataFrame
 from utils.distance_utils import all_unique_label_distance_ranker, cosine_similarity
@@ -27,6 +27,9 @@ def rep_label_vectors_to_feature_vectors(rep_label_vectors):
 
 
 def feature_vectors_to_np_vectors(feature_vectors):
+    if isinstance(feature_vectors, ndarray):
+        return feature_vectors
+    
     vectors = []
 
     for label, vector in feature_vectors.values():

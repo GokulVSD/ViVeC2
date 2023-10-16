@@ -1,4 +1,5 @@
 from scipy.spatial.distance import cityblock, correlation, cosine, euclidean
+from numpy import ndarray, array
 
 def cosine_similarity(vector_a, vector_b):
     return max(1 - cosine(vector_a, vector_b), 0)
@@ -156,15 +157,27 @@ def min_distance_ranker(query_vectors, feature_vectors, distance_fn):
     return distances
 
 
+def feature_vectors_to_np_vectors(feature_vectors):
+    if isinstance(feature_vectors, ndarray):
+        return feature_vectors
+    
+    vectors = []
+
+    for label, vector in feature_vectors.values():
+        vectors.append(vector)
+
+    return array(vectors)
+
 def distance_matrix(feature_vectors, distance_fn):
     """
     Computes an N x N matrix of distance between every image in the given vector space 
     """
+    feature_vectors = feature_vectors_to_np_vectors(feature_vectors)
     dm = []
-    for _, (_, query_vector) in feature_vectors.items():
+    for query_vector in feature_vectors:
         d = []
-        for _, (_, target_vector) in feature_vectors.items():
+        for target_vector in feature_vectors:
             d.append(distance_fn(query_vector, target_vector))
         dm.append(d)
     
-    return np.array(dm)
+    return array(dm)
