@@ -1,6 +1,6 @@
-# CSE 515 - Multimedia and Web Databases
+# ViVeC2
 
-General repository for group 15's project.
+Research and implement dimensionality reduction techniques such as SVD, LDA, K-Means, CP Decomposition & Non-Negative Matrix Factorization to generate latent semantics in order to provide the top-k similar images or labels based on given images or labels for Caltec101. We include personalized Page Rank algorithm for similarity propagation.
 
 
 Setup:
@@ -30,8 +30,6 @@ the project root directory.
 
 
 Phase 2
-
-(Due October 15 2023, midnight)
 
 Description: In this project, you will experiment with
 
@@ -153,16 +151,3 @@ vi, vj such that, for each subject vi, vj is one of the n most similar images in
 
 See Huang, S., Li, X., Candan, K. S., Sapino, M. L. (2016). Reducing seed noise in personalized PageRank.
 Social Network Analysis and Mining, 6(1), 1-25.
-
-
-Deliverables:
-
-• Your code (properly commented) and a README file.
-
-• Your outputs for the provided sample inputs.
-
-• A short report describing your work and the results.
-
-
-Please place your code in a directory titled “Code”, the outputs to a directory called “Outputs”, and your report in a directory
-called “Report”; zip or tar all off them together and submit it through the digital dropbox.
